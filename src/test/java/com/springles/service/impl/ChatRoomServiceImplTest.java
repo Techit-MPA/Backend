@@ -1,7 +1,7 @@
 package com.springles.service.impl;
 
 import com.springles.domain.constants.ChatRoomCode;
-import com.springles.domain.dto.Chat.ChatRoomListResponseDto;
+import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
 import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.repository.ChatRoomJpaRepository;
