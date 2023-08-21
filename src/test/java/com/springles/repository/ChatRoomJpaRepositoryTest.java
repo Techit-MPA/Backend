@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -54,11 +53,10 @@ class ChatRoomJpaRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Optional<List<ChatRoom>> allByCloseFalseAndState = chatRoomRepository.findAllByCloseFalseAndState(ChatRoomCode.WAITING);
         Page<ChatRoom> allByOpenTrueAndState = chatRoomRepository.findAllByOpenTrueAndState(ChatRoomCode.WAITING, pageable);
 
         // then
-        assertThat(allByCloseFalseAndState.get().size()).isEqualTo(2); // 오픈되지 않은 방, 게임중인 방은 조회 되지 않음.
+        assertThat(allByOpenTrueAndState.get().count()).isEqualTo(2); // 오픈되지 않은 방, 게임중인 방은 조회 되지 않음.
     }
 
     @Test
