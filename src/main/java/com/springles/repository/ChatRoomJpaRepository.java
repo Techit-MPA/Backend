@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface ChatRoomJpaRepository extends JpaRepository<ChatRoom, Long> {
     Optional<ChatRoom> findAllByOwnerId(Long id); //방장 이름으로 chatRoom 찾기
 
-    Optional<List<ChatRoom>> findAllByOpenTrueAndState(ChatRoomCode state); //공개방 이면서 state
+    Optional<List<ChatRoom>> findAllByCloseFalseAndState(ChatRoomCode state); //공개방 이면서 state
 }
