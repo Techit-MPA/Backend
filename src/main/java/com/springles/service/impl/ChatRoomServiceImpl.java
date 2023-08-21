@@ -65,8 +65,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public Page<ChatRoomListResponseDto> findAllChatRooms(int pageNumber, int size) {
 
         Pageable pageable = PageRequest.of(pageNumber, size);
-        Page<ChatRoom> allByOpenTrueAndState = chatRoomJpaRepository.findAllByOpenTrueAndState(ChatRoomCode.WAITING, pageable);
-        return allByOpenTrueAndState.map(ChatRoomListResponseDto::fromEntity);
+        Page<ChatRoom> allByCloseFalseAndState = chatRoomJpaRepository.findAllByCloseFalseAndState(ChatRoomCode.WAITING, pageable);
+        return allByCloseFalseAndState.map(ChatRoomListResponseDto::fromEntity);
 
     }
 
