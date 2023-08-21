@@ -50,7 +50,7 @@ class ChatRoomJpaRepositoryTest {
         chatRoomRepository.save(new ChatRoom(4L, "gameRoom4", null, 3L, ChatRoomCode.PLAYING, 8L, 8L, true));// 오픈방, 게임중
 
         // when
-        Optional<List<ChatRoom>> allByOpenTrueAndState = chatRoomRepository.findAllByOpenTrueAndState(ChatRoomCode.WAITING);
+        Optional<List<ChatRoom>> allByOpenTrueAndState = chatRoomRepository.findAllByCloseFalseAndState(ChatRoomCode.WAITING);
 
         // then
         assertThat(allByOpenTrueAndState.get().size()).isEqualTo(2); // 오픈되지 않은 방, 게임중인 방은 조회 되지 않음.

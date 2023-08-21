@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+
 @Controller
 @RequestMapping("v1/home")
 @RequiredArgsConstructor
@@ -18,23 +19,33 @@ public class ChatRoomUiController {
 
     private final ChatRoomService chatRoomService;
 
-    // 게임 만들기 페이지
+
+        // 홈으로 가는 controller : addAttribute 로 username 을 전달 해주고 있다.
+//    @GetMapping("/detail.html")
+//    public String detail(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        if (userDetails != null) {
+//            model.addAttribute("username", userDetails.getUsername());  <-- 이 부분
+//        }
+//        return "detail";
+
+
+    // 메인 페이지
+    @GetMapping("/index")
+    public String index() {
+        return "home/index";
+    }
+
+    // 게임 만들기 페이지 (GET)
     @GetMapping("/add")
-    public String writeRoom(Model model, ChatRoomReqDTO requestDto){
+    public String writeRoom(Model model, ChatRoomReqDTO requestDto, Long memberId){
         model.addAttribute("requestDto",requestDto);
         return "home/add";
     }
-    // 게임 만들기
+    // 게임 만들기 (POST)
     @PostMapping("/add")
     public String createRoom(@ModelAttribute("requestDto") @Valid ChatRoomReqDTO requestDto){
         chatRoomService.createChatRoom(requestDto);
         return "redirect:index";
-    }
-    // 게임 목록 리스트 페이지
-    @GetMapping("/index")
-    public String home(Model model) {
-        model.addAttribute("data", "Hello");
-        return "home/index";
     }
 
 
