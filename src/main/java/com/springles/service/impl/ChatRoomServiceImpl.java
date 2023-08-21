@@ -52,9 +52,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // request 자체가 빈 경우
         if (chatRoomReqDTO == null) throw new CustomException(ErrorCode.REQUEST_EMPTY);
         // 비밀방 선택 - 비밀번호 입력하지 않은 경우 오류 발생
-        if (!chatRoomReqDTO.getOpen() && (chatRoomReqDTO.getPassword().isEmpty())) throw new CustomException(CLOSE_ROOM_ERROR);
+        if (chatRoomReqDTO.getClose() && (chatRoomReqDTO.getPassword().isEmpty())) throw new CustomException(CLOSE_ROOM_ERROR);
         // 공개방 선택 - 비밀번호 입력한 경우 오류 발생
-        if (chatRoomReqDTO.getOpen() && (!chatRoomReqDTO.getPassword().isEmpty())) throw new CustomException(OPEN_ROOM_ERROR);
+        if (!chatRoomReqDTO.getClose() && (!chatRoomReqDTO.getPassword().isEmpty())) throw new CustomException(OPEN_ROOM_ERROR);
 
         ChatRoom chatRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO));
 
@@ -78,7 +78,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public Page<ChatRoomListResponseDto> findAllChatRooms(int pageNumber, int size) {
         Pageable pageable = PageRequest.of(pageNumber, size);
 
-        List<ChatRoomListResponseDto> ChatRoomResponseDtoList = chatRoomJpaRepository.findAllByOpenTrueAndState(ChatRoomCode.WAITING)
+        List<ChatRoomListResponseDto> ChatRoomResponseDtoList = chatRoomJpaRepository.findAllByCloseFalseAndState(ChatRoomCode.WAITING)
                 .get()
                 .stream()
                 .sorted(Comparator.comparingLong(o -> (o.getCapacity() - o.getHead())))
@@ -136,9 +136,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // 데이터 수정
         findChatRoom.modify(updateToEntity(dto, id));
         // 비밀방 선택 - 비밀번호 입력하지 않은 경우라면
-        if (!findChatRoom.getOpen() && findChatRoom.getPassword() == null) throw new CustomException(ErrorCode.PASSWORD_EMPTY);
+        if (findChatRoom.getClose() && findChatRoom.getPassword() == null) throw new CustomException(ErrorCode.PASSWORD_EMPTY);
         // 공개방 선택 - 비밀번호 입력한 경우라면
-        if (findChatRoom.getOpen() && findChatRoom.getPassword() != null) throw new CustomException(ErrorCode.OPEN_PASSWORD);
+        if (!findChatRoom.getClose() && findChatRoom.getPassword() != null) throw new CustomException(ErrorCode.OPEN_PASSWORD);
         // 수정한 데이터 반환
         return ChatRoomResponseDto.of(findChatRoom);
     }
