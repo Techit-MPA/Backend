@@ -141,4 +141,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // 삭제
         chatRoomJpaRepository.delete(findChatRoom);
     }
+
+    /**
+     *  id 로 채팅방 찾기
+     * @param id ChatRoom ID
+     */
+    public ChatRoomResponseDto findChatRoomByChatRoomId(Long id){
+        return ChatRoomResponseDto.of(chatRoomJpaRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM)));
+    }
 }

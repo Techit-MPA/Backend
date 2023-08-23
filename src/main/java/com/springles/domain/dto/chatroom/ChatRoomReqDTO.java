@@ -5,7 +5,6 @@ import com.springles.domain.constants.ChatRoomCode;
 import com.springles.domain.entity.ChatRoom;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
 import lombok.Data;
 
 
@@ -30,9 +29,6 @@ public class ChatRoomReqDTO {
     @Schema(description = "상태")
     private Boolean close;
 
-    //    @NotBlank(message = "비밀번호는 필수입니다.")
-//    @Size(min = 4, max = 15, message = "비밀번호는 4자 이상 15자 이하여야 합니다.")
-//    @Schema(description = "비밀번호")
     private String password;
 
     public static ChatRoom createToEntity(ChatRoomReqDTO chatRoomCreateReqDTO) {

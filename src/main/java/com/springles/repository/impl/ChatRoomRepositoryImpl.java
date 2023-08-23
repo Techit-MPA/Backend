@@ -36,7 +36,6 @@ public class ChatRoomRepositoryImpl extends Querydsl4RepositorySupport implement
 
     @Override // 현재 생성순으로 정렬되고 있어 수정 예정
     public Page<ChatRoom> findAllByCloseFalseAndState(ChatRoomCode chatRoomCode, Pageable pageable) {
-        // select * from ChatRoom where chatRoom.open = true and chatRoom.state = chatRoomCode.WAITING Order By (chatRoom.capacity - chatRoom.head)
         List<ChatRoom> chatRoomList = selectFrom(chatRoom)
                 .where(
                         chatRoom.close.isFalse(),
