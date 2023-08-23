@@ -1,10 +1,12 @@
 package com.springles.controller.ui;
 
 import com.google.gson.Gson;
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.service.ChatRoomService;
 import com.springles.service.MemberService;
 import com.springles.websocket.SimpleChatHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
