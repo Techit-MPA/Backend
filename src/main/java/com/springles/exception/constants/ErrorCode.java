@@ -60,8 +60,15 @@ public enum ErrorCode {
     DELETED_MEMBER(HttpStatus.BAD_REQUEST, "탈퇴한 회원입니다."),
     FAIL_SEND_MEMBER_ID(HttpStatus.INTERNAL_SERVER_ERROR,"아이디 메일 전송을 실패하였습니다."),
     FAIL_SEND_MEMBER_PW(HttpStatus.INTERNAL_SERVER_ERROR,"비밀번호 메일 전송을 실패하였습니다."),
-    NOT_FOUND_INPUT_VALUE_MEMBER(HttpStatus.NOT_FOUND, "입력한 정보와 일치하는 회원정보가 없습니다.");
+    NOT_FOUND_INPUT_VALUE_MEMBER(HttpStatus.NOT_FOUND, "입력한 정보와 일치하는 회원정보가 없습니다."),
 
+    /* PLAYER */
+    PLAYER_HEAD_ERROR(HttpStatus.BAD_REQUEST, "5명 이상 10명 이하로 플레이 가능합니다."),
+    PLAYER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 플레이어입니다."),
+
+    /* GAME SESSION */
+    GAME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게임입니다."),
+    GAME_HEAD_FULL(HttpStatus.BAD_REQUEST, "정원이 초과되었습니다.");
     private final HttpStatus status;
     private final String message;
 
