@@ -65,10 +65,14 @@ public enum ErrorCode {
     /* PLAYER */
     PLAYER_HEAD_ERROR(HttpStatus.BAD_REQUEST, "5명 이상 10명 이하로 플레이 가능합니다."),
     PLAYER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 플레이어입니다."),
+    PLAYER_STILL_INGAME(HttpStatus.INTERNAL_SERVER_ERROR, "플레이어가 이미 게임을 진행 중입니다."),
 
     /* GAME SESSION */
     GAME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게임입니다."),
-    GAME_HEAD_FULL(HttpStatus.BAD_REQUEST, "정원이 초과되었습니다.");
+    GAME_HEAD_FULL(HttpStatus.BAD_REQUEST, "정원이 초과되었습니다."),
+    GAME_PLAYER_EXISTS(HttpStatus.BAD_REQUEST, "아직 플레이어가 존재하는 게임은 삭제할 수 없습니다");
+
+    
     private final HttpStatus status;
     private final String message;
 
