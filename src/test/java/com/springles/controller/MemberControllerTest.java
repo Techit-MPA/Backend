@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springles.controller.api.MemberController;
 import com.springles.domain.dto.member.*;
 import com.springles.domain.entity.Member;
+import com.springles.domain.entity.RefreshToken;
 import com.springles.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -119,7 +120,7 @@ class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("로그아웃 테스트 - CASE.성공")
+    @DisplayName("회원탈퇴 테스트 - CASE.성공")
     void signOut() throws Exception {
         // given
         MemberDeleteRequest memberDto = MemberDeleteRequest.builder()
@@ -151,15 +152,18 @@ class MemberControllerTest {
                 .password("password1!")
                 .build();
 
-        String returnValue =
-                "memberName : " + memberDto.getMemberName()
-                        + ", accessToken : " + "accessTokenValue"
-                        + ", refreshToken : "
-                        + "{ "
-                        + "id : " + 1L
-                        + ", refreshToken : " + "refreshTokenValue"
-                        + ", expiryDate : " + 60
-                        + " }";
+        MemberLoginResponse returnValue = MemberLoginResponse.builder()
+                .accessToken("accessTokenValue")
+                .refreshToken(
+                        RefreshToken.builder()
+                                .Id("refreshTokenId")
+                                .refreshToken("refreshTokenValue")
+                                .expiration(60L)
+                                .memberName("mafia1")
+                                .build()
+                )
+                .memberName("mafia1")
+                .build();
 
         // when
         when(memberService.login(any(MemberLoginRequest.class))).thenReturn(returnValue);
@@ -172,7 +176,9 @@ class MemberControllerTest {
                 .andExpectAll(
                         status().is2xxSuccessful(), // 상태코드 200
                         content().contentType(MediaType.APPLICATION_JSON),
-                        MockMvcResultMatchers.jsonPath("$.data").value(returnValue)
+                        MockMvcResultMatchers.jsonPath("$.data.memberName").value("mafia1"),
+                        MockMvcResultMatchers.jsonPath("$.data.accessToken").value("accessTokenValue"),
+                        MockMvcResultMatchers.jsonPath("$.data.refreshToken.refreshToken").value("refreshTokenValue")
                 );
     }
 

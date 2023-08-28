@@ -68,8 +68,8 @@ class MemberServiceImplTest {
                 .password("password1!")
                 .build();
 
-        String loginInfo = memberService.login(memberLoginRequest);
-        accessToken = loginInfo.split(" ")[5].split(",")[0];
+        MemberLoginResponse loginInfo = memberService.login(memberLoginRequest);
+        accessToken = loginInfo.getAccessToken();
         authHeader = "Bearer " + accessToken;
     }
 
@@ -152,14 +152,14 @@ class MemberServiceImplTest {
     @DisplayName("로그인 테스트 - CASE.성공")
     void login() {
         // given - when
-        String result = memberService.login(MemberLoginRequest.builder()
+        MemberLoginResponse result = memberService.login(MemberLoginRequest.builder()
                 .memberName("mafia1")
                 .password("password1!")
                 .build()
         );
 
-        String accessToken = result.split("accessToken : ")[1].split(",")[0];
-        String refreshTokenId = result.split("refreshToken : \\{ id : ")[1].split(",")[0];
+        String accessToken = result.getAccessToken();
+        String refreshTokenId = result.getRefreshToken().getId();
 
         // then
         assertEquals("mafia1", jwtTokenUtils.parseClaims(accessToken).getSubject());
