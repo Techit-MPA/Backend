@@ -7,7 +7,8 @@
 <body>
 <script>
     let url = "[[${nextUrl}]]"
-    if(confirm("방을 생성 하시겠습니까 ? ") == true){
+    let msg = "[[${errorMessage}]]"
+    if(confirm(msg + "\n방을 생성 하시겠습니까 ? ") == true){
         window.location.href = url;
     }else {
         window.location.href = "/v1/index";
