@@ -103,7 +103,7 @@ public class ChatUiController {
 
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("nextUrl", String.format("/v1/add"));
-            return "error/confirm";
+            return "check/confirm";
         }
 
 
