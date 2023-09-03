@@ -210,3 +210,19 @@ body {
     text-align: center
 }
 
+.vertif-txt {
+    color: #666666;
+}
+
+.vertif-pw-box {
+    display:inline-block;
+    float:left;
+}
+
+.vertif-pw-box {
+    display:inline-block;
+    float:right;
+}
+
+
+
