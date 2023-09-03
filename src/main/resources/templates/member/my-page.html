@@ -6,7 +6,7 @@
     <div class="index-container">
         <div class="row">
             <div class="col-3 center p-1 m-5">
-                <!-----------------------사용자 정보 ----------------------------------------------------------->
+                <!-----------------------프로필 ----------------------------------------------------------->
                 <div class="card profile">
                     <!---------레벨 ---------->
                     <div class="card-header text-white" style="border-radius: 14px;">
@@ -15,15 +15,19 @@
                     <div class="card-body2 container row">
                         <!--------- 프로필 사진 -------->
                         <div class="my_div my_bg col m-3 p-0">
+                            <img class="my_bg_img" id="profileImg" th:src="${profileInfo.getProfileImg().getFileUrl()}"
+                                 alt="프로필이미지"/>
                         </div>
                         <!--------------------- 닉네임 -------->
                         <div class="nick-name-box col p-3">
                             <div class="nick-name" th:text="${profileInfo.getNickname()}"></div>
                         </div>
                     </div>
-                    <div class="card-body-info container">
+
+                    <!-----------------------게임 관련 정보 ----------------------------------------------------------->
+                    <div class="card_body_info container">
                         <!--------------------- 경험치 -------->
-                        <div class="exp-box col mt1">
+                        <div class="exp-box col mt-3">
                             <div class="exp">
                                 <p>경험치 : <span th:text="${profileInfo.getExp()}"></span> exp</p>
                             </div>
@@ -51,26 +55,41 @@
 
             </div>
 
-            <!-- 게임 기록 조회 -->
-            <div class="chat_list_ui" id="memberRecord">
-                <div class="all-count">총 게임 횟수:</div>
-                <div class="mafia">
-                    <div class="count">횟수:</div>
-                    <div class="odds">승률:</div>
+            <!-----------------------게임 기록(전적) ----------------------------------------------------------->
+            <div class="member-record col-6 r p-1 m-5" id="memberRecord">
+                <p>내 전적</p>
+                <div class="record_box pl-4 mb-3">
+                    <p class="record_text pt-3">총 게임 횟수: <span th:text="${record.getTotalCnt()}"></span> 회</p>
                 </div>
-                <div class="citizen">
-                    <div class="count">횟수:</div>
-                    <div class="odds">승률:</div>
+                <div class="record_box pl-4 mb-3">
+                    <p class="record_text pt-3">총 게임 시간: <span th:text="${record.getTotalTime()}"></span> 분</p>
                 </div>
-                <div class="police">
-                    <div class="count">횟수:</div>
-                    <div class="odds">승률:</div>
+                <div class="row mb-3 mb-3" style="margin-left: 0.08rem">
+                    <div class="record_box col-5 pl-4">
+                        <p class="record_title mt-3">마피아</p>
+                        <p class="record_text">횟수: <span th:text="${record.getMafiaCnt()}"></span> 회</p>
+                        <p class="record_text">승률: <span th:text="${record.getMafiaOdds()}"></span> %</p>
+                    </div>
+                    <div class="record_box col-5 ml-5 pl-4">
+                        <p class="record_title mt-3">시민</p>
+                        <p class="record_text">횟수: <span th:text="${record.getCitizenCnt()}"></span> 회</p>
+                        <p class="record_text">승률: <span th:text="${record.getCitizenOdds()}"></span> %</p>
+                    </div>
                 </div>
-                <div class="doctor">
-                    <div class="count">횟수:</div>
-                    <div class="odds">승률:</div>
+                <div class="row mb-3 mb-3" style="margin-left: 0.08rem">
+                    <div class="record_box col-5 pl-4">
+                        <p class="record_title mt-3">경찰</p>
+                        <p class="record_text ml-2">횟수: <span th:text="${record.getPoliceCnt()}"></span> 회</p>
+                        <p class="record_text ml-2">승률: <span th:text="${record.getPoliceOdds()}"></span> %</p>
+                    </div>
+                    <div class="record_box col-5 ml-5 pl-4">
+                        <p class="record_title mt-3">의사</p>
+                        <p class="record_text">횟수: <span th:text="${record.getDoctorCnt()}"></span> 회</p>
+                        <p class="record_text">승률: <span th:text="${record.getDoctorOdds()}"></span> %</p>
+                    </div>
                 </div>
             </div>
+
         </div>
 
 

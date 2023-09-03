@@ -35,7 +35,7 @@ public interface MemberService {
 
     MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String authHeader);
 
-    MemberProfileRead readProfile(String authHeader);
+    MemberProfileRead readProfile(String accessToken);
 
     MemberProfileResponse levelUp(Long memberId);
 
@@ -44,7 +44,7 @@ public interface MemberService {
     Long rank(Long memberId);
 
     /** 멤버 게임 기록 조회 */
-    MemberRecordResponse readRecord(String authHeader);
+    MemberRecordResponse readRecord(String accessToken);
 
     /** 멤버 게임 기록 update */
     MemberRecordResponse updateRecord(Long memberId);

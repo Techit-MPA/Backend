@@ -554,8 +554,8 @@ public class MemberServiceImpl implements MemberService {
      * 멤버 게임 기록 update
      */
     @Override
-    public MemberRecordResponse readRecord(String authHeader) {
-        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+    public MemberRecordResponse readRecord(String accessToken) {
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
         // 헤더의 회원정보가 존재하는 회원정보인지 체크
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
