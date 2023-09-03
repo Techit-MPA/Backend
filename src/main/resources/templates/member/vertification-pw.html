@@ -5,9 +5,9 @@
 
 <div layout:fragment="content">
     <div th:insert="fragments/header::header"></div>
-    <div class="title"><h3>비밀번호 찾기</h3></div>
     <div class="form-container">
         <div class="form-item">
+            <div class="mb-4"><h5>비밀번호 찾기</h5></div>
             <form th:action="@{/member/vertification/pw}" th:object="${member}" method="post" >
                 <table class="table">
                     <tbody>

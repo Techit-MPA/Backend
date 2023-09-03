@@ -3,10 +3,10 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/basic}">
 <div layout:fragment="content">
-    <div class="title"><h3>아이디 찾기</h3></div>
+    <div th:insert="fragments/header::header"></div>
     <div class="form-container">
-        <div th:insert="fragments/header::header"></div>
         <div class="form-item">
+            <div class="mb-4"><h5>아이디 찾기</h5></div>
                 <form th:action="@{/member/vertification/id}" th:object="${member}" method="post" >
                 <table class="table">
                     <tbody>
