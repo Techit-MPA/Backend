@@ -153,4 +153,34 @@ public class MemberUiController {
 
         return "member/my-page";
     }
+
+    // 회원 정보 변경 GET
+    @GetMapping("/my-page/info")
+    public String memberInfo(
+            Model model,
+            @ModelAttribute("memberInfo") MemberUpdateRequest memberDto,
+            HttpServletRequest request
+    )
+    {
+        String accessToken = (String)request.getAttribute("accessToken");
+        MemberInfoResponse memberInfo = memberService.getUserInfo(accessToken);
+
+        model.addAttribute("memberInfo", memberDto);
+        model.addAttribute("rawMemberInfo", memberInfo);
+
+        return "member/member-info";
+    }
+
+    // 회원 정보 변경 POST
+    @PostMapping("/my-page/info")
+    public String memberInfo(
+            @ModelAttribute("member") MemberUpdateRequest memberDto,
+            HttpServletRequest request
+    )
+    {
+        // accessToken 추출
+        String accessToken = (String)request.getAttribute("accessToken");
+        memberService.updateInfo(memberDto, accessToken);
+        return "redirect:info";
+    }
 }
