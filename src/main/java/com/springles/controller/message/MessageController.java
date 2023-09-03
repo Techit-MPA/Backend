@@ -3,6 +3,9 @@ package com.springles.controller.message;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.constants.ResponseCode;
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
+import com.springles.domain.entity.ChatRoom;
+import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.game.ChatMessage;
 import com.springles.game.GameSessionManager;
@@ -39,6 +42,16 @@ public class MessageController {
          * 밤에 시민이 채팅을 하지 못하게 하는 방법?
          * 최후의 변론 때 대상자를 제외하곤 채팅을 하지 못하게 하는 방법?
          * */
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        if (gameSession.getGamePhase().equals(GamePhase.NIGHT_VOTE)) {
+            if (gameSessionManager.findPlayerByMemberName(
+                accessor.getUser().getName()).getRole().equals(GameRole.MAFIA))
+            {
+                messageManager.sendMessage("/sub/chat/"+roomId+"/"+"mafia", message, roomId,
+                    accessor.getUser().getName());
+            }
+            return;
+        }
         messageManager.sendMessage("/sub/chat/" + roomId, message, roomId,
             accessor.getUser().getName());
     }
@@ -103,7 +116,7 @@ public class MessageController {
 
         mafiaList.forEach(m -> {
             messageManager.sendMessage(
-                "/sub/chat/" + roomId + "/" + "mafia",
+                "/sub/chat/" + roomId + "/" + m.getMemberId(),
                 "마피아 플레이어는" + " [" + mafiaListString + "] " + "입니다.",
                 roomId, "admin"
             );
@@ -111,7 +124,15 @@ public class MessageController {
     }
 
     // 게임 정보 수정?
-
+    @MessageMapping("/pub/gameUpdate/{roomId}")
+    public void sendMessage_GameUpdate(SimpMessageHeaderAccessor accessor,
+        @DestinationVariable Long roomId) {
+        messageManager.sendMessage(
+            "/sub/chat/"+roomId,
+            "게임 정보가 변경되었습니다.",
+            roomId, "admin"
+        );
+    }
     public String getTimeString() {
         return new SimpleDateFormat("HH:mm").format(new Date());
     }
