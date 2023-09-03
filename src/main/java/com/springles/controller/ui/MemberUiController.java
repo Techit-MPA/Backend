@@ -1,4 +1,5 @@
 package com.springles.controller.ui;
+import com.springles.domain.constants.ProfileImg;
 import com.springles.domain.dto.member.*;
 import com.springles.service.MemberService;
 import jakarta.servlet.http.Cookie;
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -209,5 +211,30 @@ public class MemberUiController {
         memberService.signOut(memberDto, accessToken);
 
         return new RedirectView("/v1/login-page");
+    }
+
+    // 프로필 설정 GET
+    @GetMapping("/profile-settings")
+    public String profileSetting(
+            Model model,
+            @ModelAttribute("member") MemberProfileCreateRequest memberDto
+    )
+    {
+        model.addAttribute("member", memberDto);
+        return "member/profile-settings";
+    }
+
+    // 프로필 설정 POST
+    @PostMapping("/profile-settings")
+    public String profileSetting(
+            @ModelAttribute("member") MemberProfileCreateRequest memberDto,
+            HttpServletRequest request
+            )
+    {
+        // accessToken 추출
+        String accessToken = (String)request.getAttribute("accessToken");
+        memberService.createProfile(memberDto, accessToken);
+
+        return "redirect:index";
     }
 }

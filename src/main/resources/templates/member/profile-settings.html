@@ -6,37 +6,66 @@
 <div layout:fragment="content">
     <div class="form-container">
         <div class="form-item">
-            <form th:action="@{/v1/login}" th:object="${memberDto}" method="post" >
+            <div class="mb-4"><h5>프로필 설정</h5></div>
+            <form th:action="@{/v1/profile-settings}" th:object="${member}" method="post">
                 <table class="table">
                     <tbody>
                     <div>
-                        <label for="memberName">아이디</label>
-                        <input type="text" id="memberName" th:field="*{memberName}" class="form-control" placeholder="아이디를 입력하세요">
+                        <label for="nickname">닉네임</label>
+                        <input type="text" id="nickname" th:field="*{nickname}" class="form-control"
+                               placeholder="아이디를 입력하세요">
                     </div>
                     <div>
-                        <label for="password">비밀번호</label>
-                        <input type="text" id="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+                        <p class="mt-4">프로필 이미지</p>
+                        <div class="row">
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_1" name="profileImgNum" value="1" checked>
+                                <label for="profileImg_1">
+                                    <img class="my_bg_img" src="../images/profile_01.jpg" alt="프로필이미지1"/>
+                                </label>
+                            </div>
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_2" name="profileImgNum" value="2">
+                                <label for="profileImg_2">
+                                    <img class="my_bg_img" src="../images/profile_02.jpg" alt="프로필이미지2"/>
+                                </label>
+                            </div>
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_3" name="profileImgNum" value="3">
+                                <label for="profileImg_3">
+                                    <img class="my_bg_img" src="../images/profile_03.jpg" alt="프로필이미지3"/>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_4" name="profileImgNum" value="4">
+                                <label for="profileImg_4">
+                                    <img class="my_bg_img" src="../images/profile_04.jpg" alt="프로필이미지4"/>
+                                </label>
+                            </div>
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_5" name="profileImgNum" value="5">
+                                <label for="profileImg_5">
+                                    <img class="my_bg_img" src="../images/profile_05.jpg" alt="프로필이미지5"/>
+                                </label>
+                            </div>
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_6" name="profileImgNum" value="6">
+                                <label for="profileImg_6">
+                                    <img class="my_bg_img" src="../images/profile_06.jpg" alt="프로필이미지6"/>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     <div>
-                        <button class="submit_btn" type="submit">등록</button>
+                        <button class="submit_btn" type="submit">프로필 설정</button>
                     </div>
 
                 </table>
             </form>
         </div>
     </div>
-
-    <!------------------ 아이디/비밀번호 찾기 ----------------------->
-    <div class="vertification">
-        <a href = "/v1/vertification-id">아이디 찾기</a>
-        <a href = "/v1/vertification-pw">비밀번호 찾기</a>
-    </div>
-
-    <!---------------------- script ----------------------->
-    <script th:if="${param.error}">
-        window.onload = function() {
-            alert('다시 로그인해주세요.');
-        }
-    </script>
 </div>
 </html>

@@ -31,7 +31,7 @@ public interface MemberService {
 
     boolean memberExists(String memberName);
 
-    MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String authHeader);
+    MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String accessToken);
 
     MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String authHeader);
 

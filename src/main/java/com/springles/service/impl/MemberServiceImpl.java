@@ -372,9 +372,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String authHeader) {
+    public MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String accessToken) {
 
-        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
         // 헤더의 회원정보가 존재하는 회원정보인지 체크
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
@@ -766,6 +766,8 @@ public class MemberServiceImpl implements MemberService {
                 .killCnt(0L)
                 .mafiaWinCnt(0L)
                 .citizenWinCnt(0L)
+                .policeWinCnt(0L)
+                .doctorWinCnt(0L)
                 .totalCnt(0L)
                 .totalTime(0L)
                 .build();
