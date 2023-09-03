@@ -193,11 +193,7 @@ public class MemberUiController {
             HttpServletRequest request
     )
     {
-        String accessToken = (String)request.getAttribute("accessToken");
-        MemberInfoResponse memberInfo = memberService.getUserInfo(accessToken);
-
         model.addAttribute("member", memberDto);
-
         return "member/member-sign-out";
     }
 
