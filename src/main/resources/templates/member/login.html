@@ -24,11 +24,19 @@
                 </table>
             </form>
         </div>
-        <script th:if="${param.error}">
-            window.onload = function() {
-                alert('다시 로그인해주세요.');
-            }
-        </script>
     </div>
+
+    <!------------------ 아이디/비밀번호 찾기 ----------------------->
+    <div class="vertification">
+        <a href = "/v1/vertification-id">아이디 찾기</a>
+        <a href = "/v1/vertification-pw">비밀번호 찾기</a>
+    </div>
+
+    <!---------------------- script ----------------------->
+    <script th:if="${param.error}">
+        window.onload = function() {
+            alert('다시 로그인해주세요.');
+        }
+    </script>
 </div>
 </html>

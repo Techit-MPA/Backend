@@ -1,8 +1,5 @@
 package com.springles.controller.ui;
-import com.springles.domain.dto.member.MemberCreateRequest;
-import com.springles.domain.dto.member.MemberInfoResponse;
-import com.springles.domain.dto.member.MemberLoginRequest;
-import com.springles.domain.dto.member.MemberLoginResponse;
+import com.springles.domain.dto.member.*;
 import com.springles.service.MemberService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -111,5 +108,27 @@ public class MemberUiController {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);
+    }
+
+    // 아이디 찾기 GET
+    @GetMapping("/vertification-id")
+    public String vertificationId(
+            Model model,
+            @ModelAttribute("member") MemberVertifIdRequest memberDto
+    )
+    {
+        model.addAttribute("member", memberDto);
+        return "member/vertification-id";
+    }
+
+    // 비밀번호 찾기 GET
+    @GetMapping("/vertification-pw")
+    public String vertificationId(
+            Model model,
+            @ModelAttribute("member") MemberVertifPwRequest memberDto
+    )
+    {
+        model.addAttribute("member", memberDto);
+        return "member/vertification-pw";
     }
 }
