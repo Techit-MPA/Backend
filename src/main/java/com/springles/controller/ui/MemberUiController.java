@@ -237,4 +237,35 @@ public class MemberUiController {
 
         return "redirect:index";
     }
+
+    // 프로필 변경 GET
+    @GetMapping("/profile-change")
+    public String profileSetting(
+            Model model,
+            @ModelAttribute("profile") MemberProfileUpdateRequest memberDto,
+            HttpServletRequest request
+    )
+    {
+        // accessToken 추출
+        String accessToken = (String)request.getAttribute("accessToken");
+        MemberProfileRead rawProfile = memberService.readProfile(accessToken);
+
+        model.addAttribute("profile", memberDto);
+        model.addAttribute("rawProfile", rawProfile);
+        return "member/profile-change";
+    }
+
+    // 프로필 변경 POST
+    @PostMapping("/profile-change")
+    public String profileSetting(
+            @ModelAttribute("member") MemberProfileUpdateRequest memberDto,
+            HttpServletRequest request
+    )
+    {
+        // accessToken 추출
+        String accessToken = (String)request.getAttribute("accessToken");
+        memberService.updateProfile(memberDto, accessToken);
+
+        return "redirect:index";
+    }
 }

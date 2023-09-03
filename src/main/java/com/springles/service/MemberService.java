@@ -33,7 +33,7 @@ public interface MemberService {
 
     MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String accessToken);
 
-    MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String authHeader);
+    MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String accessToken);
 
     MemberProfileRead readProfile(String accessToken);
 

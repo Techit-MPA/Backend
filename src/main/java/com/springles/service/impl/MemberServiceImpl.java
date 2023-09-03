@@ -401,8 +401,8 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Override
-    public MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String authHeader) {
-        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+    public MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String accessToken) {
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
         // 헤더의 회원정보가 존재하는 회원정보인지 체크
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
