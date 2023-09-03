@@ -5,6 +5,7 @@
 <div layout:fragment="content">
     <div class="title"><h3>아이디 찾기</h3></div>
     <div class="form-container">
+        <div th:insert="fragments/header::header"></div>
         <div class="form-item">
                 <form th:action="@{/member/vertification/id}" th:object="${member}" method="post" >
                 <table class="table">
