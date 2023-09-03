@@ -1,7 +1,5 @@
 package com.springles.service.impl;
 
-import com.springles.domain.constants.GameRole;
-import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.constants.Level;
 import com.springles.domain.dto.member.*;
 import com.springles.domain.entity.*;
@@ -9,17 +7,13 @@ import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.jwt.JwtTokenUtils;
 import com.springles.repository.*;
-import com.springles.repository.support.MemberGameInfoJpaRepository;
+import com.springles.repository.MemberGameInfoJpaRepository;
 import com.springles.service.MemberService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
