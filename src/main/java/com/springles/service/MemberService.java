@@ -17,7 +17,7 @@ public interface MemberService {
 
     String updateInfo(MemberUpdateRequest memberDto, String authHeader);
 
-    void signOut(MemberDeleteRequest memberDto, String authHeader);
+    void signOut(MemberDeleteRequest memberDto, String accessToken);
 
     MemberLoginResponse login(MemberLoginRequest memberDto);
 

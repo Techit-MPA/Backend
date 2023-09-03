@@ -200,4 +200,13 @@ body {
     background-color: #ffffff;
 }
 
+.sign-out-btn {
+    border: #ced4da solid 1px;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.sign-out-btn-box {
+    text-align: center
+}
 

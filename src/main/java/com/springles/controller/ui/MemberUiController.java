@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping("v1")
@@ -182,5 +183,35 @@ public class MemberUiController {
         String accessToken = (String)request.getAttribute("accessToken");
         memberService.updateInfo(memberDto, accessToken);
         return "redirect:info";
+    }
+
+    // 회원 탈퇴 GET
+    @GetMapping("/my-page/sign-out")
+    public String signOut(
+            Model model,
+            @ModelAttribute("member") MemberDeleteRequest memberDto,
+            HttpServletRequest request
+    )
+    {
+        String accessToken = (String)request.getAttribute("accessToken");
+        MemberInfoResponse memberInfo = memberService.getUserInfo(accessToken);
+
+        model.addAttribute("member", memberDto);
+
+        return "member/member-sign-out";
+    }
+
+    // 회원 탈퇴 POST
+    @PostMapping("/my-page/sign-out")
+    public RedirectView signOut(
+            @ModelAttribute("member") MemberDeleteRequest memberDto,
+            HttpServletRequest request
+    )
+    {
+        // accessToken 추출
+        String accessToken = (String)request.getAttribute("accessToken");
+        memberService.signOut(memberDto, accessToken);
+
+        return new RedirectView("/v1/login-page");
     }
 }
