@@ -46,9 +46,13 @@
                         </div>
                     </div>
                 </div>
-                <!--- 회원 정보 관리 --->
+                <!----------------------- 프로필 변경, 회원 정보 관리 버튼 ----------------------------------------->
                 <div>
-                    <button class="my_btn" style="margin-top: 150px;" type="button" onclick="location.href='/v1/my-page/info'">
+                    <button class="my_btn" style="margin-top: 150px;" type="button"
+                            onclick="location.href='/v1/profile-change'">
+                        <span class="text-white">프로필 변경</span>
+                    </button>
+                    <button class="my_btn mt-3" type="button" onclick="location.href='/v1/my-page/info'">
                         <span class="text-white">회원 정보 관리</span>
                     </button>
                 </div>
@@ -91,84 +95,6 @@
             </div>
 
         </div>
-
-
-        <!---------------------- script ----------------------->
-        <!--            <th:block layout:fragment="script">-->
-        <!--                <script th:inline="javascript">  // 자바스크립트 인라인-->
-        <!--                $('#checkbox').on('click', function () {-->
-        <!--                    const checkBtn = document.getElementById('checkbox');-->
-        <!--                    let allChatRooms = [[${allChatRooms}]];-->
-        <!--                    if (allChatRooms.length === 0) return;-->
-        <!--                    allChatRooms = [[${allChatRooms}]];-->
-        <!--                    console.log("allChatRooms : " + allChatRooms);-->
-        <!--                    // 필터를 적용해야하는 경우라면-->
-        <!--                    if (checkBtn.checked) {-->
-
-        <!--                        for (var i = 0; i < allChatRooms.length; i++) {-->
-        <!--                            // 비밀방 또는 게임중이면 HIDE-->
-        <!--                            if (allChatRooms[i].close || allChatRooms[i].state === "PLAYING") {-->
-        <!--                                document.getElementById('room_' + i).style.display = "none";-->
-        <!--                            }-->
-        <!--                        }-->
-        <!--                    } else {-->
-        <!--                        for (var i = 0; i < allChatRooms.length; i++) {-->
-        <!--                            document.getElementById('room_' + i).style.display = "";-->
-        <!--                        }-->
-        <!--                    }-->
-
-        <!--                });-->
-
-        <!--                // 검색 리셋-->
-        <!--                function clearButton() {-->
-        <!--                    window.location.href = "/v1/index";-->
-        <!--                }-->
-
-        <!--                // 채팅방 선택 후 비밀방 여부 확인, 비밀번호 입력창 띄우기-->
-        <!--                $("a[name='chatroom-url']").click(function (event) {-->
-
-        <!--                    event.preventDefault();-->
-        <!--                    const roomId = $(this).attr("roomId");-->
-        <!--                    const isClose = $(this).attr("isClose");-->
-        <!--                    const nickname = $(this).attr("nickname");-->
-        <!--                    const passwordInputDiv = document.getElementById("passwordInput_" + roomId);// passwordInputDiv 요소 가지고 옴.-->
-
-        <!--                    console.log(roomId);-->
-        <!--                    console.log(isClose);-->
-        <!--                    console.log(nickname);-->
-
-        <!--                    if (isClose === 'true') { // 비밀방이면-->
-        <!--                        passwordInputDiv.style.display = "block"; // 비밀번호 입력가능한 input 을 표출-->
-        <!--                    } else {-->
-        <!--                        window.location.href = '/chat/' + roomId + '/' + nickname; // 오픈방이면 input 을 보여주지 않고 chat room 으로 이동시킴-->
-        <!--                    }-->
-        <!--                });-->
-
-        <!--                // 비밀번호 제출-->
-        <!--                $("button[name='password-submit']").click(function (event) {-->
-
-        <!--                    event.preventDefault();-->
-
-        <!--                    const roomId = $(this).attr("data-roomId");-->
-        <!--                    const isClose = $(this).attr("data-isClose");-->
-        <!--                    const nickname = $(this).attr("data-nickname");-->
-        <!--                    const roomPassword = $(this).attr("data-roomPassword");-->
-        <!--                    const userInput = $(this).prev().val();-->
-
-        <!--                    console.log(roomPassword);-->
-        <!--                    console.log(isClose);-->
-        <!--                    console.log(nickname);-->
-        <!--                    console.log("userInput = " + userInput);-->
-
-        <!--                    if (roomPassword !== userInput) {-->
-        <!--                        alert('비밀번호가 일치하지 않습니다.')-->
-        <!--                        event.preventDefault();-->
-        <!--                    } else {-->
-        <!--                        window.location.href = '/chat/' + roomId + '/' + nickname; // 맞다면 이동-->
-        <!--                    }-->
-        <!--                });-->
-        <!--                </script>-->
-        <!--            </th:block>-->
     </div>
 </div>
 </div>
