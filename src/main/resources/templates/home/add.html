@@ -83,7 +83,12 @@
                         data: json,
                         success: function(data) {
                             stompClient.send(`/pub/gameCreate/${data.data.id}`)
-                            location.href = `http://localhost:8080/v1/index`
+                            // response data에서 방장 이름 가져오기
+                            const nickName = response.data.nickName;
+                            // response data에서 roomId 가져오기
+                            const roomId = response.data.id;
+                            // 성공할 경우 해당 채팅방으로 바로 이동
+                            location.replace('http://localhost:8080/chat/'+roomId+'/'+nickName);
                         },
                         error: function(response) {
                             alert(JSON.stringify(response.responseJSON.message))
