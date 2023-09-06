@@ -36,10 +36,8 @@ public class VoteController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final PlayerRedisRepository playerRedisRepository;
 
-    @MessageMapping("/pub/chat/{roomId}/start")
-    private void voteStart (SimpMessageHeaderAccessor accessor,
-                            @DestinationVariable Long roomId,
-                            @Payload GameSessionVoteRequestDto request) {
+    @MessageMapping("/chat/{roomId}/start")
+    private void voteStart (SimpMessageHeaderAccessor accessor, @DestinationVariable Long roomId) {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         gameSession.changePhase(GamePhase.DAY_DISCUSSION, 100);
         gameSession.passADay();
