@@ -3,7 +3,6 @@ package com.springles.repository;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.entity.Vote;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -14,7 +13,6 @@ import java.util.Map;
 
 @Repository
 @Getter
-@Slf4j
 public class VoteRedisRepository {
     // RedisTemplate: Redis 데이터베이스와 상호작용하기 위한 편리한 방법을 제공하는 도구
     private final RedisTemplate<String, Vote> redisTemplate;
@@ -42,7 +40,6 @@ public class VoteRedisRepository {
             }
             updateVote(playerId, vote);
         });
-        log.info("VoteRedisRepository: VoteResult {}", voteResult.toString());
         return voteResult;
     }
 

@@ -123,8 +123,6 @@
                     <div th:text="${player.getRole()}"></div>
                 </div>
             </div>
-            <!---------------투표 생성 테스트 -------------------->
-            <a href="/pub/chat/2/confirm"></a>
         </div>
         <!------------------- 채팅----------------------------------------------------------------------------------->
         <div class="col-9" style="padding:0; height:80%">
@@ -195,14 +193,9 @@
             event.preventDefault()
             const messageInput = document.getElementById('message');
             const message = messageInput.value
-            stompClient.send("/pub/chat", {
-                    "Authorization": "Bearer Token_here"
-                },
-                JSON.stringify({
-                    'roomId': roomId,
-                    'sender': nickname,
-                    'message': message
-                }));
+            stompClient.send(`/pub/chat/${roomId}`, {
+                "Authorization": "Bearer Token_here"
+            },message);
             messageInput.value = null
         })
 

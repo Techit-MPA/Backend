@@ -36,7 +36,7 @@ public class VoteRepository {
         // 무슨 투표이고 어떤 참여자가 투표하는지 HashMap 초기화
         VoteInfo voteInfo = VoteInfo.builder(phaseCount, players);
         voteInfosMap.put(roomId, voteInfo);
-        log.info("VoteRepository: Room {} VoteInfo {}", roomId, voteInfo.toString());
+        log.info("Room {} VoteInfo {}", roomId, voteInfo.toString());
         voteRedisRepository.startVote(getVoters(roomId), phase);
     }
 
