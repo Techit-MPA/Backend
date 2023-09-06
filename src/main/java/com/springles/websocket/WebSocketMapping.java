@@ -37,7 +37,7 @@ public class WebSocketMapping {
         String time = new SimpleDateFormat("HH:mm").format(new Date());
         chatMessage.setTime(time);
         simpMessagingTemplate.convertAndSend(
-                String.format("/topic/%s", chatMessage.getRoomId()),
+                String.format("/sub/chat/%s", chatMessage.getRoomId()),
                 chatMessage
         );
     }
