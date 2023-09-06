@@ -28,7 +28,7 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
-        registry.addEndpoint("/chatting");
+        registry.addEndpoint("/chatting").setAllowedOrigins("*");
     }
 
 
@@ -42,9 +42,9 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/topic",
                 "/sub/chat",
             "/sub/gameStart",
-            "/sub/player",
             "/sub/joinGame",
-            "/sub/exitGame"
+            "/sub/exitGame",
+            "/sub/gameRole"
             );
 
         // 발신
