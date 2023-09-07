@@ -72,6 +72,11 @@ public class VoteController {
                  day + "번째 날 아침이 밝았습니다. 투표를 시작합니다.",
                 roomId, "admin"
         );
+        messageManager.sendMessage(
+                "/sub/chat/" + roomId,
+                "마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오.",
+                roomId, "admin"
+        );
     }
 
     @MessageMapping("/chat/{roomId}/vote")
@@ -79,7 +84,6 @@ public class VoteController {
                          @DestinationVariable Long roomId,
                          @Payload GameSessionVoteRequestDto request) {
         String playerName = getMemberName(accessor);
-        log.info("Player {} 로그로그", playerName);
         Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
         log.info("Player {} vote {}", playerName, request.getVote());
 
@@ -87,10 +91,13 @@ public class VoteController {
         if (voteResult == null) {
             throw new CustomException(ErrorCode.FAIL_VOTE);
         }
+
         else {
+            Player voted = playerRedisRepository.findById(voteResult.get(playerId)).get();
+            String votedPlayerName = voted.getMemberName();
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
-                    VoteResultResponseDto.of(voteResult).toString(),
+                    votedPlayerName + "가 투표되었습니다.",
                     roomId, "admin"
             );
         }
