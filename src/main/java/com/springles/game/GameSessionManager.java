@@ -75,6 +75,7 @@ public class GameSessionManager {
         if (!players.isEmpty()) {
             throw new CustomException(ErrorCode.GAME_PLAYER_EXISTS);
         }
+        chatRoomJpaRepository.deleteById(roomId);
         gameSessionRedisRepository.deleteById(roomId);
     }
 
