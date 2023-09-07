@@ -28,14 +28,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class DayDiscussionManager {
-    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final MessageManager messageManager;
     private final GameSessionManager gameSessionManager;
     private final PlayerRedisRepository playerRedisRepository;
     private final GameSessionVoteService gameSessionVoteService;
     private final ObjectMapper objectMapper;
-    public void sendMessage(String message) throws JsonProcessingException {
+    public void sendMessage(DayDiscussionMessage message) {
         DayDiscussionMessage dayDiscussionMessage
-                = objectMapper.readValue(message, DayDiscussionMessage.class);
+                = message;
 
         Long roomId = dayDiscussionMessage.getRoomId();
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
@@ -44,8 +44,11 @@ public class DayDiscussionManager {
         List<Long> suspiciousList =
                 dayDiscussionMessage.getSuspiciousList();
 
+        log.info("Room {} suspicious List: {}", roomId, suspiciousList.toString());
         // DAY_TO_NIGHT
         if(suspiciousList.isEmpty()) {
+            log.info("Room {} suspicious List is Empty", roomId);
+
             // 비어 있다면 그냥 밤으로 바꾸기
             setDayToNight(roomId);
             return;
@@ -63,7 +66,7 @@ public class DayDiscussionManager {
 
 
         // 현재 게임의 상태 발송
-        simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId, GameStatusRes.of(gameSession, players));
+        //simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId, GameStatusRes.of(gameSession, players));
 
         Map<Long, GameRole> alivePlayerRoles = players.stream()
                 .filter(Player::isAlive)

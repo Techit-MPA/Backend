@@ -2,6 +2,9 @@ package com.springles.controller.message;
 
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
+import com.springles.domain.dto.message.DayDiscussionMessage;
+import com.springles.domain.dto.message.DayEliminationMessage;
+import com.springles.domain.dto.message.NightVoteMessage;
 import com.springles.domain.dto.vote.ConfirmResultResponseDto;
 import com.springles.domain.dto.vote.GameSessionVoteRequestDto;
 import com.springles.domain.dto.vote.VoteResultResponseDto;
@@ -10,6 +13,7 @@ import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.game.ChatMessage;
+import com.springles.game.DayDiscussionManager;
 import com.springles.game.GameSessionManager;
 import com.springles.game.MessageManager;
 import com.springles.repository.PlayerRedisRepository;
@@ -37,6 +41,7 @@ public class VoteController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final PlayerRedisRepository playerRedisRepository;
     private final MessageManager messageManager;
+    private final DayDiscussionManager dayDiscussionManager;
 
     @MessageMapping("/chat/{roomId}/dayStart")
     private void voteStart (SimpMessageHeaderAccessor accessor, @DestinationVariable Long roomId) {
@@ -86,12 +91,17 @@ public class VoteController {
         String playerName = getMemberName(accessor);
         Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
         log.info("Player {} vote {}", playerName, request.getVote());
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
 
         Map<Long, Long> voteResult = gameSessionVoteService.vote(roomId, playerId, request);
+        Map<Long, Boolean> confirmResult = gameSessionVoteService.confirmVote(roomId, playerId, request);
+
         if (voteResult == null) {
             throw new CustomException(ErrorCode.FAIL_VOTE);
         }
-
+        else if(confirmResult.size() <= 0) {
+            throw new CustomException(ErrorCode.FAIL_CONFIRM_VOTE);
+        }
         else {
             Player voted = playerRedisRepository.findById(voteResult.get(playerId)).get();
             String votedPlayerName = voted.getMemberName();
@@ -100,6 +110,19 @@ public class VoteController {
                     votedPlayerName + "가 투표되었습니다.",
                     roomId, "admin"
             );
+            int confirmCnt = confirmResult.entrySet().stream()
+                    .filter(e -> e.getValue() == true) // confirm == true인 이용자
+                    .collect(Collectors.toList()).size();
+
+            int alivePlayerCnt = gameSession.getAliveCivilian()
+                    + gameSession.getAliveDoctor()
+                    + gameSession.getAlivePolice()
+                    + gameSession.getAliveMafia();
+            log.info("confirmCnt: {}, alivePlayerCnt: {}", confirmCnt, alivePlayerCnt);
+            if (confirmCnt == alivePlayerCnt) { // 살아 있는 모두가 투표를 끝내면 투표 종료
+                Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
+                publishMessage(roomId, vote);
+            }
         }
     }
 
@@ -202,5 +225,15 @@ public class VoteController {
     }
     public String getMemberName(SimpMessageHeaderAccessor accessor) {
         return accessor.getUser().getName().split(",")[1].split(":")[1].trim();
+    }
+
+    private void publishMessage(Long roomId, Map<Long, Long> vote) {
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        log.info("Room {} start Phase {}", roomId, gameSession.getGamePhase());
+        if (gameSession.getGamePhase() == GamePhase.DAY_DISCUSSION) {
+            DayDiscussionMessage dayDiscussionMessage =
+                    new DayDiscussionMessage(roomId, gameSessionVoteService.getSuspiciousList(gameSession, vote));
+            dayDiscussionManager.sendMessage(dayDiscussionMessage);
+        }
     }
 }

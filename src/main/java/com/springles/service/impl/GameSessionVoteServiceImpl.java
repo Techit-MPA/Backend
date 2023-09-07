@@ -1,5 +1,6 @@
 package com.springles.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springles.config.TimeConfig;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
@@ -11,6 +12,7 @@ import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
+import com.springles.game.DayDiscussionManager;
 import com.springles.game.GameSessionManager;
 import com.springles.game.task.VoteFinTimerTask;
 import com.springles.repository.PlayerRedisRepository;
@@ -34,13 +36,14 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     private final GameSessionManager gameSessionManager;
     private final PlayerRedisRepository playerRedisRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
+   // private final DayDiscussionManager dayDiscussionManager;
 
 
     @Override
     public void startVote(Long roomId, int phaseCount, GamePhase phase, LocalDateTime time, Map<Long, GameRole> players) {
         log.info("Room {} start Vote for {}", roomId, phase);
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-        gameSession.setGamePhase(phase);
+        gameSessionManager.changePhase(roomId, phase);
         voteRepository.startVote(roomId, phaseCount, phase, players);
         Timer timer = new Timer();
 //        VoteFinTimerTask task = new VoteFinTimerTask(this);
@@ -52,17 +55,17 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     @Override
-    public void endVote(Long roomId, int phaseCount, GamePhase phase) {
-        // 이미 끝났다면
-        if(voteRepository.isEnd(roomId, phaseCount)) {
-            return;
-        }
-        else {
-            Map<Long, Long> vote = voteRepository.getVoteResult(roomId);
-            log.info("Room {} end Vote for {}", roomId, phase);
-            voteRepository.endVote(roomId, phase);
-            publishMessage(roomId, vote);
-        }
+    public Map<Long, Long> endVote(Long roomId, int phaseCount, GamePhase phase) {
+        log.info("Room {} start ending", roomId);
+
+        Map<Long, Long> vote = voteRepository.getVoteResult(roomId);
+        log.info("Room {} end Vote for {}", roomId, phase);
+        voteRepository.endVote(roomId, phase);
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        gameSessionManager.changePhase(roomId, GamePhase.DAY_ELIMINATE);
+        //publishMessage(roomId, vote);
+        return vote;
+
     }
 
     @Override
@@ -91,6 +94,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         if(!voteRepository.isValid(playerId, request.getPhase())) {
             throw new CustomException(ErrorCode.VOTE_NOT_VALID);
         }
+        log.info("Room {} Player {} Confirmed At {}", roomId, playerId, request.getPhase());
         return voteRepository.confirmVote(roomId, playerId);
     }
 
@@ -128,23 +132,23 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
 
-    private void publishMessage(Long roomId, Map<Long, Long> vote) {
-        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-
-        if (gameSession.getGamePhase() == GamePhase.DAY_DISCUSSION) {
-            DayDiscussionMessage dayDiscussionMessage =
-                    new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote));
-            simpMessagingTemplate.convertAndSend(dayDiscussionMessage);
-        } else if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
-            DayEliminationMessage dayEliminationMessage =
-                    new DayEliminationMessage(roomId, getEliminationPlayer(gameSession, vote));
-            simpMessagingTemplate.convertAndSend(dayEliminationMessage);
-        }
-        else if (gameSession.getGamePhase() == GamePhase.NIGHT_VOTE) {
-            NightVoteMessage nightVoteMessage
-                    = new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote), getSuspectResult(gameSession, vote));
-        }
-    }
+//    private void publishMessage(Long roomId, Map<Long, Long> vote) {
+//        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+//        log.info("Room {} start Phase {}", roomId, gameSession.getGamePhase());
+//        if (gameSession.getGamePhase() == GamePhase.DAY_DISCUSSION) {
+//            DayDiscussionMessage dayDiscussionMessage =
+//                    new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote));
+//            dayDiscussionManager.sendMessage(dayDiscussionMessage);
+//        } else if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
+//            DayEliminationMessage dayEliminationMessage =
+//                    new DayEliminationMessage(roomId, getEliminationPlayer(gameSession, vote));
+//            simpMessagingTemplate.convertAndSend(dayEliminationMessage);
+//        }
+//        else if (gameSession.getGamePhase() == GamePhase.NIGHT_VOTE) {
+//            NightVoteMessage nightVoteMessage
+//                    = new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote), getSuspectResult(gameSession, vote));
+//        }
+//    }
 
     private Map<Long, Player> getSuspectResult(GameSession gameSession, Map<Long, Long> vote) {
         Map<Long, Player> suspectResult = new HashMap<>();
@@ -171,7 +175,8 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     // 후보자 반환 메소드
-    private List<Long> getSuspiciousList(GameSession gameSession, Map<Long, Long> voteResult) {
+    @Override
+    public List<Long> getSuspiciousList(GameSession gameSession, Map<Long, Long> voteResult) {
         List<Long> suspiciousList = new ArrayList<>();
 
         // <투표받은 사람, 투표수>로 정리
