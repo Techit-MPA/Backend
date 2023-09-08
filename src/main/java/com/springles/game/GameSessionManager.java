@@ -151,4 +151,10 @@ public class GameSessionManager {
         gameSession.setGamePhase(phase);
         gameSessionRedisRepository.save(gameSession);
     }
+
+    public void passDay(Long roomId) {
+        GameSession gameSession = findGameByRoomId(roomId);
+        gameSession.passADay();
+        gameSessionRedisRepository.save(gameSession);
+    }
 }

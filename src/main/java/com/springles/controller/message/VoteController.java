@@ -12,10 +12,7 @@ import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
-import com.springles.game.ChatMessage;
-import com.springles.game.DayDiscussionManager;
-import com.springles.game.GameSessionManager;
-import com.springles.game.MessageManager;
+import com.springles.game.*;
 import com.springles.repository.PlayerRedisRepository;
 import com.springles.service.GameSessionVoteService;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +24,10 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -42,12 +40,13 @@ public class VoteController {
     private final PlayerRedisRepository playerRedisRepository;
     private final MessageManager messageManager;
     private final DayDiscussionManager dayDiscussionManager;
+    private final DayEliminationManager dayEliminationManager;
 
     @MessageMapping("/chat/{roomId}/dayStart")
     private void voteStart (SimpMessageHeaderAccessor accessor, @DestinationVariable Long roomId) {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         gameSession.changePhase(GamePhase.DAY_VOTE, 100);
-        gameSession.passADay();
+        gameSessionManager.passDay(roomId);
 
         // 종료된 게임인지 체크
         if (!gameSessionManager.existRoomByRoomId(roomId)) {
@@ -77,11 +76,20 @@ public class VoteController {
                  day + "번째 날 아침이 밝았습니다. 투표를 시작합니다.",
                 roomId, "admin"
         );
-        messageManager.sendMessage(
-                "/sub/chat/" + roomId,
-                "마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오.",
-                roomId, "admin"
-        );
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
+        Runnable task = () -> {
+            // 실행하고자 하는 코드를 여기에 작성합니다.
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    "마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오.",
+                    roomId, "admin"
+            );
+        };
+        // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
+        // 아래의 예제는 5초 후에 작업을 실행합니다.
+        executor.schedule(task, 2, TimeUnit.SECONDS);
     }
 
     @MessageMapping("/chat/{roomId}/vote")
@@ -234,6 +242,11 @@ public class VoteController {
             DayDiscussionMessage dayDiscussionMessage =
                     new DayDiscussionMessage(roomId, gameSessionVoteService.getSuspiciousList(gameSession, vote));
             dayDiscussionManager.sendMessage(dayDiscussionMessage);
+        }
+        else if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
+            DayEliminationMessage dayEliminationMessage =
+                    new DayEliminationMessage(roomId, gameSessionVoteService.getEliminationPlayer(gameSession, vote));
+            dayEliminationManager.sendMessage(dayEliminationMessage);
         }
     }
 }

@@ -1,20 +1,13 @@
 package com.springles.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.springles.config.TimeConfig;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
-import com.springles.domain.dto.message.DayDiscussionMessage;
-import com.springles.domain.dto.message.DayEliminationMessage;
-import com.springles.domain.dto.message.NightVoteMessage;
 import com.springles.domain.dto.vote.GameSessionVoteRequestDto;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
-import com.springles.game.DayDiscussionManager;
 import com.springles.game.GameSessionManager;
-import com.springles.game.task.VoteFinTimerTask;
 import com.springles.repository.PlayerRedisRepository;
 import com.springles.repository.VoteRepository;
 import com.springles.service.GameSessionVoteService;
@@ -62,10 +55,11 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         log.info("Room {} end Vote for {}", roomId, phase);
         voteRepository.endVote(roomId, phase);
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-        gameSessionManager.changePhase(roomId, GamePhase.DAY_ELIMINATE);
+        if (phase == GamePhase.DAY_VOTE) {
+            gameSessionManager.changePhase(roomId, GamePhase.DAY_DISCUSSION);
+        }
         //publishMessage(roomId, vote);
         return vote;
-
     }
 
     @Override
@@ -226,7 +220,8 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         return suspiciousList;
     }
 
-    private Long getEliminationPlayer(GameSession gameSession, Map<Long, Long> voteResult) {
+    @Override
+    public Long getEliminationPlayer(GameSession gameSession, Map<Long, Long> voteResult) {
         // 최다 득표수 플레이어를 죽이는 메소드
         Long deadPlayerId = null;
         Map<Long, Integer> voteNum = new HashMap<>();
