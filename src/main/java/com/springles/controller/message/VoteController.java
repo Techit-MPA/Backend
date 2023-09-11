@@ -101,8 +101,8 @@ public class VoteController {
             publishMessage(roomId, vote);
         };
         // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
-        // 아래의 예제는 5초 후에 작업을 실행합니다.
-        executor.schedule(endVoteTask, 15, TimeUnit.SECONDS);
+        // 아래의 예제는 15초 후에 작업을 실행합니다.
+        endVote.schedule(endVoteTask, 15, TimeUnit.SECONDS);
     }
 
     @MessageMapping("/chat/{roomId}/vote")
@@ -143,13 +143,13 @@ public class VoteController {
                     + gameSession.getAliveDoctor()
                     + gameSession.getAlivePolice()
                     + gameSession.getAliveMafia();
-            log.info("confirmCnt: {}, alivePlayerCnt: {}", confirmCnt, alivePlayerCnt);
-            if (gameSession.getGamePhase() == GamePhase.DAY_VOTE) {
-                if (confirmCnt == alivePlayerCnt) { // 살아 있는 모두가 투표를 끝내면 투표 종료
-                    Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
-                    publishMessage(roomId, vote);
-                }
-            }
+            log.info("confirmCnt: {}, killCnt: {}, alivePlayerCnt: {}", confirmCnt, alivePlayerCnt);
+//            if (gameSession.getGamePhase() == GamePhase.DAY_VOTE) {
+//                if (confirmCnt == alivePlayerCnt) { // 살아 있는 모두가 투표를 끝내면 투표 종료
+//                    Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
+//                    publishMessage(roomId, vote);
+//                }
+//            }
             if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
                 if (killCnt > alivePlayerCnt / 2) { // 과반수 이상이 찬성하면
                     Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
