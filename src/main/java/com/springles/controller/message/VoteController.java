@@ -46,7 +46,8 @@ public class VoteController {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         Optional<Player> hostOptional = playerRedisRepository.findById(gameSession.getHostId());
         Player host = hostOptional.get();
-        if (!playerName.equals(host.getMemberName())) {
+
+        if (!playerName.equals(host.getMemberName()) || gameSession.getGamePhase() == GamePhase.DAY_VOTE) {
             throw new CustomException(ErrorCode.BAD_REQUEST_ERROR);
         }
         log.info("day Start 잘 받음");

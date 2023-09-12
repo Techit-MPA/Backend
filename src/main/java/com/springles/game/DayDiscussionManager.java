@@ -118,6 +118,7 @@ public class DayDiscussionManager {
     }
 
     private void setDayToNight(Long roomId) {
+
         dayToNightManager.sendMessage(roomId);
     }
 }

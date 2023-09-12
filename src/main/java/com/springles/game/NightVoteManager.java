@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,9 +60,6 @@ public class NightVoteManager {
         Map<Long, Player> playerMap = players.stream().collect(
                 Collectors.toMap(Player::getMemberId, Function.identity()));
 
-        // 살해당한 인간
-        Optional<Player> deadPlayerOptional = Optional.ofNullable(playerMap.get(deadPlayerId));
-
         setNightDay(gameSession, deadPlayerId);
 
         // 밤이 지나고 이제 낮이 시작
@@ -72,23 +68,6 @@ public class NightVoteManager {
                 gameSession.getDay(),
                 gameSession.getGamePhase());
 
-        // 밤 투표 결과 모두에게 전송
-        if (deadPlayerOptional.isEmpty()) {
-            log.info("아무도 안 죽음");
-            messageManager.sendMessage(
-                    "/sub/chat/" + roomId,
-                     "아무도 죽지 않았습니다.",
-                    gameSession.getRoomId(), "admin"
-            );
-        } else {
-            Player deadPlayer = deadPlayerOptional.get();
-            log.info("{} 죽음", deadPlayer.getMemberName());
-            messageManager.sendMessage(
-                    "/sub/chat/" + roomId,
-                    deadPlayer.getMemberName() + "님이 마피아에게 사망하셨습니다.",
-                    gameSession.getRoomId(), "admin"
-            );
-        }
 
         // 용의자 조사 결과 관찰자와 경찰에게 전송
         for (Long voter : suspectVote.keySet()) {
@@ -119,10 +98,11 @@ public class NightVoteManager {
 
     private void setNightDay(GameSession gameSession, Long deadPlayerId) {
         gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 7);
+        Long roomId = gameSession.getRoomId();
         gameSessionManager.saveSession(gameSession);
         log.info("Room {} is {}", gameSession.getRoomId(), gameSession.getGamePhase());
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
-
+        log.info("deadPlayerId: {}", deadPlayerId);
         for (Player player : players) {
             // 살아 있으면 패스
             if (player.isAlive()) {
@@ -132,23 +112,30 @@ public class NightVoteManager {
             gameSessionManager.removePlayer(gameSession.getRoomId(), player.getMemberName());
         }
 
-        Optional<Player> deadPlayerOptional = playerRedisRepository.findById(deadPlayerId);
-
-        // 죽을 인간이 존재하면
-        if (deadPlayerOptional.isPresent()) {
+        if (deadPlayerId == null) {
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    "아무도 죽지 않았습니다.",
+                    gameSession.getRoomId(), "admin"
+            );
+            throw new CustomException(ErrorCode.DEAD_PLAYER_NOT_FOUND);
+        }
+        else {
+            Optional<Player> deadPlayerOptional = playerRedisRepository.findById(deadPlayerId);
             Player deadPlayer = deadPlayerOptional.get();
             // 아직 살아 있다면
             if (deadPlayer.isAlive()) {
                 log.info("{} 님이 마피아에게 사망하셨습니다.", deadPlayer.getMemberName());
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        deadPlayer.getMemberName() + "님이 마피아에게 사망하셨습니다.",
+                        gameSession.getRoomId(), "admin"
+                );
                 // 죽임
                 deadPlayer.setAlive(false);
                 deadPlayer.setRole(GameRole.OBSERVER);
                 playerRedisRepository.save(deadPlayer);
             }
-        }
-
-        else {
-            throw new CustomException(ErrorCode.DEAD_PLAYER_NOT_FOUND);
         }
         log.info("Room {} NightVote deadPlayer: {}", gameSession.getRoomId(), deadPlayerId);
     }
