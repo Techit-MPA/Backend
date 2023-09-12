@@ -98,7 +98,7 @@ public class NightVoteManager {
             log.info("Room {} NightVote suspectPlayer: {}", roomId, suspectPlayer.getMemberId());
             messageManager.sendMessage(
                     "/sub/chat/" + roomId + '/' + GameRole.POLICE,
-                    suspectPlayer.getMemberName()+ "님은" + suspectPlayer.getRole() + "입니다.",
+                    suspectPlayer.getMemberName()+ "님은 " + suspectPlayer.getRole() + "입니다.",
                     gameSession.getRoomId(), "admin"
             );
         }
