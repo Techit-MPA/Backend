@@ -156,11 +156,6 @@ public class VoteController {
         log.info("nightVote 잘 받음");
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         log.info("Game Phase: {}", gameSession.getGamePhase());
-        messageManager.sendMessage(
-                "/sub/chat/" + roomId,
-                "투표는 30 초입니다.",
-                roomId, "admin"
-        );
         Runnable task = () -> {
             Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), gameSession.getGamePhase());
             publishMessage(roomId, vote);

@@ -382,7 +382,7 @@
         stompClient.subscribe(`/sub/chat/${roomId}/timer`, function (message) {
           console.log(message);
 
-          startNight(message);
+          publish(message);
         })
 
         // 개인 채팅 URL 구독
@@ -470,12 +470,15 @@
       document.getElementById('gamePlayer').innerText = i;
     }
 
-    function startNight(messageOutput) {
+    function publish(messageOutput) {
       const messageJson = JSON.parse(messageOutput.body);
       const messageType = messageJson.message;
       console.log(messageType);
       if (messageType == "night") {
         stompClient.send(`/pub/chat/${roomId}/nightStart`);
+      }
+      else if (messageType == "day") {
+        setTimeout(voteStart, 60000);
       }
     }
 
