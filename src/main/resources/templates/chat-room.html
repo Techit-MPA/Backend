@@ -421,7 +421,7 @@
                 'vote': selectedValue
             });
             console.log(message);
-            stompClient.send(`/pub/chat/${roomId}/nightVote`, {
+            stompClient.send(`/pub/chat/${roomId}/vote/night`, {
                     "Authorization": getCookie("accessToken")
                 },
                 message);

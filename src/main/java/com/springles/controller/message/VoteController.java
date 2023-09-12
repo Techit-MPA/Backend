@@ -5,9 +5,7 @@ import com.springles.domain.constants.GameRole;
 import com.springles.domain.dto.message.DayDiscussionMessage;
 import com.springles.domain.dto.message.DayEliminationMessage;
 import com.springles.domain.dto.message.NightVoteMessage;
-import com.springles.domain.dto.vote.ConfirmResultResponseDto;
 import com.springles.domain.dto.vote.GameSessionVoteRequestDto;
-import com.springles.domain.dto.vote.VoteResultResponseDto;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
@@ -21,7 +19,6 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
@@ -93,7 +90,7 @@ public class VoteController {
             publishMessage(roomId, vote);
         };
 
-        executor.schedule(endVoteTask, 30, TimeUnit.SECONDS);
+        executor.schedule(endVoteTask, 60, TimeUnit.SECONDS);
     }
 
 
@@ -144,8 +141,15 @@ public class VoteController {
     @MessageMapping("/chat/{roomId}/nightStart")
     private void nightVoteStart (SimpMessageHeaderAccessor accessor,
                             @DestinationVariable Long roomId) {
-        log.info("nightVote 잘 받음");
+        String playerName = getMemberName(accessor);
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        Optional<Player> hostOptional = playerRedisRepository.findById(gameSession.getHostId());
+        Player host = hostOptional.get();
+        if (!playerName.equals(host.getMemberName())) {
+            throw new CustomException(ErrorCode.BAD_REQUEST_ERROR);
+        }
+
+        log.info("nightVote 잘 받음");
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         log.info("Game Phase: {}", gameSession.getGamePhase());
         messageManager.sendMessage(
@@ -196,6 +200,7 @@ public class VoteController {
     }
 
     private void publishMessage(Long roomId, Map<Long, Long> vote) {
+        log.info("publish 단계까지 도달");
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         log.info("Room {} start Phase {}", roomId, gameSession.getGamePhase());
         if (gameSession.getGamePhase() == GamePhase.DAY_DISCUSSION) {
@@ -208,9 +213,9 @@ public class VoteController {
                     new DayEliminationMessage(roomId, gameSessionVoteService.getEliminationPlayer(gameSession, vote));
             dayEliminationManager.sendMessage(dayEliminationMessage);
         } else if (gameSession.getGamePhase() == GamePhase.NIGHT_VOTE) {
+            log.info("NIGHT VOTE 걸러짐");
             NightVoteMessage nightVoteMessage =
-                    new NightVoteMessage(
-                            roomId,
+                    new NightVoteMessage(roomId,
                             gameSessionVoteService.getNightVoteResult(gameSession, vote),
                             gameSessionVoteService.getSuspectResult(gameSession, vote));
             nightVoteManager.sendMessage(nightVoteMessage);
