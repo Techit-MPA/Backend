@@ -202,7 +202,8 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         return deadPlayerId;
     }
 
-    private Map<GameRole, Long> getNightVoteResult(GameSession gameSession, Map<Long, Long> voteResult) {
+    @Override
+    public Map<GameRole, Long> getNightVoteResult(GameSession gameSession, Map<Long, Long> voteResult) {
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
         // <memberId, player>로 만든 맵
         Map<Long, Player> playerMap = players.stream().collect(Collectors.toMap(Player::getMemberId, p -> p));

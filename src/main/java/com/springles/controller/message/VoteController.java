@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class VoteController {
     private final GameSessionManager gameSessionManager;
     private final GameSessionVoteService gameSessionVoteService;
-    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final NightVoteManager nightVoteManager;
     private final PlayerRedisRepository playerRedisRepository;
     private final MessageManager messageManager;
     private final DayDiscussionManager dayDiscussionManager;
@@ -148,6 +148,11 @@ public class VoteController {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         log.info("Game Phase: {}", gameSession.getGamePhase());
+        messageManager.sendMessage(
+                "/sub/chat/" + roomId,
+                "투표는 20 초입니다.",
+                roomId, "admin"
+        );
         Runnable task = () -> {
             Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), gameSession.getGamePhase());
             publishMessage(roomId, vote);
@@ -162,7 +167,6 @@ public class VoteController {
         String playerName = getMemberName(accessor);
         Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
         log.info("Player {} vote {}", playerName, request.getVote());
-
         log.info("밤 투표 메시지 받기 완료");
         log.info("PlayerName: {}", playerName);
         Player player = gameSessionManager.findPlayerByMemberName(playerName);
@@ -203,6 +207,14 @@ public class VoteController {
             DayEliminationMessage dayEliminationMessage =
                     new DayEliminationMessage(roomId, gameSessionVoteService.getEliminationPlayer(gameSession, vote));
             dayEliminationManager.sendMessage(dayEliminationMessage);
+        } else if (gameSession.getGamePhase() == GamePhase.NIGHT_VOTE) {
+            NightVoteMessage nightVoteMessage =
+                    new NightVoteMessage(
+                            roomId,
+                            gameSessionVoteService.getNightVoteResult(gameSession, vote),
+                            gameSessionVoteService.getSuspectResult(gameSession, vote));
+            nightVoteManager.sendMessage(nightVoteMessage);
+
         }
     }
 }
