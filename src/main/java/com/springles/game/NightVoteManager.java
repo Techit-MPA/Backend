@@ -129,6 +129,16 @@ public class NightVoteManager {
             Player deadPlayer = deadPlayerOptional.get();
             // 아직 살아 있다면
             if (deadPlayer.isAlive()) {
+                if (deadPlayer.getRole() == GameRole.CIVILIAN) {
+                    gameSession.setAliveCivilian(gameSession.getAliveCivilian() - 1);
+                } else if (deadPlayer.getRole() == GameRole.MAFIA) {
+                    gameSession.setAliveMafia(gameSession.getAliveMafia() - 1);
+                } else if (deadPlayer.getRole() == GameRole.DOCTOR) {
+                    gameSession.setAliveDoctor(gameSession.getAliveDoctor() - 1);
+                } else if (deadPlayer.getRole() == GameRole.POLICE) {
+                    gameSession.setAlivePolice(gameSession.getAlivePolice() - 1);
+                }
+                gameSessionManager.saveSession(gameSession);
                 log.info("{} 님이 마피아에게 사망하셨습니다.", deadPlayer.getMemberName());
                 messageManager.sendMessage(
                         "/sub/chat/" + roomId,
@@ -143,22 +153,6 @@ public class NightVoteManager {
 
                 List<Player> playersRe = playerRedisRepository.findByRoomId(gameSession.getRoomId());
 
-
-                // 살아 있는 인원 업데이트
-                gameSession.setAliveCivilian((int) playersRe.stream()
-                        .filter(e -> e.getRole() == GameRole.CIVILIAN)
-                        .filter(Player::isAlive).count());
-                gameSession.setAliveDoctor((int) playersRe.stream()
-                        .filter(e -> e.getRole() == GameRole.DOCTOR)
-                        .filter(Player::isAlive).count());
-                gameSession.setAliveMafia((int) playersRe.stream()
-                        .filter(e -> e.getRole() == GameRole.MAFIA)
-                        .filter(Player::isAlive).count());
-                gameSession.setAlivePolice((int) playersRe.stream()
-                        .filter(e -> e.getRole() == GameRole.POLICE)
-                        .filter(Player::isAlive).count());
-
-                gameSessionManager.saveSession(gameSession);
                 log.info("Room {} CIVILIAN: {}, POLICE: {}, MAFIA: {}, DOCTOR: {}",
                         roomId,
                         gameSession.getAliveCivilian(),
