@@ -293,6 +293,9 @@
                     type="submit">낮 투표하기
             </button>
           </form>
+          <form id="confirm-form">
+
+          </form>
           <form id="vote-form-night">
             <select id="vote-select-night" class="form-select" aria-label="Default select example">
               <option selected>Open this select menu</option>
@@ -364,6 +367,10 @@
         // 채팅방 목록 URL 구독
         stompClient.subscribe(`/sub/chat/${roomId}/playerList`, function (message) {
           updatePlayerList(message)
+        })
+
+        // 낮 투표 후보
+        stompClient.subscribe(`/sub/chat/${roomId}/votePlayer`, function (message) {
           updateVoteList(message)
         })
 
@@ -496,6 +503,8 @@
     }
 
     function updateNightVoteList(message) {
+      const deadPlayer = document.getElementById("confirm-form");
+      deadPlayer.innerHTML = "";
       const list = document.getElementById('vote-select-night');
       list.innerHTML = "";
       let i = 0
@@ -509,7 +518,7 @@
     }
 
     function updateDeadPlayer(message) {
-      const deadPlayer = document.getElementById("vote-form");
+      const deadPlayer = document.getElementById("confirm-form");
       deadPlayer.innerHTML = "";
       const player = JSON.parse(message.body)
       console.log(player.memberName);

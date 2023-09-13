@@ -75,7 +75,7 @@ public class NightVoteManager {
             Optional<Player> policeOptional = playerRedisRepository.findById(voter);
             String policeName = "";
             if (policeOptional.isPresent()) {
-                policeName = policeOptional.get().getMemberName()
+                policeName = policeOptional.get().getMemberName();
             }
             Player suspectPlayer = suspectVote.get(voter);
             log.info("Room {} NightVote suspectPlayer: {}", roomId, suspectPlayer.getMemberId());
