@@ -59,8 +59,40 @@ public class DayToNightManager {
                 gameSession.getAliveDoctor());
 
         if (gameSessionManager.isEnd(gameSession)) {
+            if (gameSessionManager.mafiaWin(gameSession) == 1) {
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "마피아팀이 승리하였습니다",
+                        gameSession.getRoomId(), "admin"
+                );
+            }
+            else if (gameSessionManager.mafiaWin(gameSession) == 0) {
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "시민팀이 승리하였습니다",
+                        gameSession.getRoomId(), "admin"
+                );
+            }
+            else {
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "무승부입니다",
+                        gameSession.getRoomId(), "admin"
+                );
+            }
+
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    "end",
+                    gameSession.getRoomId(), "admin"
+            );
             log.info("game end");
             gameSessionManager.endGame(gameSession.getRoomId());
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId + "/timer",
+                    "end",
+                    gameSession.getRoomId(), "admin"
+            );
             return;
         }
 
