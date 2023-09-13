@@ -40,10 +40,12 @@ public class MessageController {
     public void sendMessage(SimpMessageHeaderAccessor accessor, String message,
         @DestinationVariable Long roomId) {
 
-        log.info("수신 메시지: " + message + " 방 id: " + roomId + " 발송자: " + getMemberName(accessor));
 
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         Player player = gameSessionManager.findPlayerByMemberName(getMemberName(accessor));
+
+        log.info("수신 메시지: " + message + " 방 id: " + roomId + " 발송자: " + getMemberName(accessor) + "페이즈: " + gameSession.getGamePhase());
+
         // 관전자는 관전자들끼리만 채팅이 가능
         if (player.getRole().equals(GameRole.OBSERVER)) {
             messageManager.sendMessage("/sub/chat/" + roomId + "/" + GameRole.OBSERVER, message,
@@ -95,6 +97,7 @@ public class MessageController {
     public void sendMessage_GameExit(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long roomId) {
         String memberName = getMemberName(accessor);
+        String nickName = gameSessionManager.findPlayerByMemberName(memberName).getNickName();
         gameSessionManager.removePlayer(roomId, memberName);
 
         // 게임 참여자 목록 갱신
@@ -106,7 +109,7 @@ public class MessageController {
         // 게임 퇴장 메시지 전송
         messageManager.sendMessage(
             "/sub/chat/" + roomId,
-            memberName + "님이 퇴장했습니다.",
+            nickName + "님이 퇴장했습니다.",
             roomId, "admin"
         );
     }
