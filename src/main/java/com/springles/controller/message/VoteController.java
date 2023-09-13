@@ -56,18 +56,20 @@ public class VoteController {
         gameSessionManager.saveSession(gameSession);
 
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
+        List<Player> alivePlayers = new ArrayList<>();
 
-        messageManager.sendMessage(
-                "/sub/chat/" + roomId + "/votePlayer",
-                players);
 
         Map<Long, GameRole> alivePlayerMap = new HashMap<>();
         for (Player player : players) {
             //log.info("Room {} has Player {} ", gameSession.getRoomId(), player.getMemberName());
             if (player.isAlive()) {
                 alivePlayerMap.put(player.getMemberId(), player.getRole());
+                alivePlayers.add(player);
             }
         }
+        messageManager.sendMessage(
+                "/sub/chat/" + roomId + "/votePlayer",
+                alivePlayers);
 
         gameSessionVoteService.startVote(roomId, gameSession.getPhaseCount(),
                 gameSession.getGamePhase(), gameSession.getTimer(), alivePlayerMap);

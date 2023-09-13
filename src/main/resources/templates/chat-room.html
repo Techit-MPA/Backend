@@ -525,8 +525,6 @@
         }
 
         function updateNightVoteList(message) {
-            const deadPlayer = document.getElementById("confirm-form");
-            deadPlayer.innerHTML = "";
             const list = document.getElementById('vote-select-night');
             list.innerHTML = "";
             let i = 0
@@ -559,7 +557,7 @@
             });
 
             const oppositeButton = document.getElementById("opposite");
-            opposeButton.addEventListener("click", () => {
+            oppositeButton.addEventListener("click", () => {
                 // 반대 버튼이 클릭되었을 때 실행될 코드 작성
                 alert("반대했습니다!");
                 const message = JSON.stringify({
